@@ -40,6 +40,10 @@ public class ProfileUploadBase extends AssignmentEndpoint {
     try {
       var uploadedFile = new File(uploadDirectory, fullName);
       uploadedFile.createNewFile();
+      // Set file permissions: readable and writable, not executable
+      uploadedFile.setReadable(true, true);
+      uploadedFile.setWritable(true, true);
+      uploadedFile.setExecutable(false, true);
       FileCopyUtils.copy(file.getBytes(), uploadedFile);
 
       if (attemptWasMade(uploadDirectory, uploadedFile)) {
@@ -57,7 +61,9 @@ public class ProfileUploadBase extends AssignmentEndpoint {
 
   @SneakyThrows
   protected File cleanupAndCreateDirectoryForUser(String username) {
-    var uploadDirectory = new File(this.webGoatHomeDirectory, "/PathTraversal/" + username);
+    // Only allow alphanumeric usernames to prevent path traversal
+    String safeUsername = username.replaceAll("[^a-zA-Z0-9]", "");
+    var uploadDirectory = new File(this.webGoatHomeDirectory, "/PathTraversal/" + safeUsername);
     if (uploadDirectory.exists()) {
       FileSystemUtils.deleteRecursively(uploadDirectory);
     }

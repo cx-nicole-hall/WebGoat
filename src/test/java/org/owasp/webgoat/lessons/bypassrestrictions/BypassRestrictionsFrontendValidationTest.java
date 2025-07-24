@@ -70,5 +70,6 @@ public class BypassRestrictionsFrontendValidationTest extends LessonTest {
                 .param("error", "0"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.lessonCompleted", is(false)));
+        
   }
 }
